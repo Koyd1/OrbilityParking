@@ -1,0 +1,2 @@
+Here can be put model files. For this module to work properly, here should be .onnx and .json files.
+Files can be downloaded here: https://huggingface.co/rhasspy/piper-voices/tree/main
