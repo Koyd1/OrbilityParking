@@ -150,10 +150,10 @@ def resource_monitor(stop_event):
 
 def main():
     print("Инициализация Whisper STT...")
-    stt = WhisperSTT()  # Модель с хорошим качеством и <2 ГБ RAM
+    stt = WhisperSTT() 
 
     print("\nЗапуск транскрибации с микрофона...")
-    stt.transcribe_microphone(duration=60, show_resources=True)
+    stt.transcribe_microphone(duration=20, show_resources=True)
 
 
 if __name__ == "__main__":
