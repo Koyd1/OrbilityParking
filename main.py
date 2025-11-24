@@ -48,6 +48,19 @@ def main() -> None:
     if plate:
         orchestrator.repo.save_car_event(plate=plate, source="camera_mock")
         log.info("Сохранён номер авто: %s", plate)
+        history_hits = orchestrator.repo.find_history_by_plate(plate)
+        if history_hits:
+            msg = f"Номер {plate} найден в базе, билеты: {[h.get('BE_N_NUMTIT') for h in history_hits]}"
+            print(msg)
+            log.info(msg)
+            if getattr(orchestrator, "tts_service", None):
+                orchestrator.tts_service.speak(msg)
+        else:
+            msg = f"Номер {plate} не зарегистрирован в HISTORY"
+            print(msg)
+            log.info(msg)
+            if getattr(orchestrator, "tts_service", None):
+                orchestrator.tts_service.speak(msg)
 
     try:
         stt = WhisperSTT(model_size=config.stt_model_size)
