@@ -17,3 +17,22 @@
 2025-11-24 10:15:06 | INFO | main | Сохранён номер авто: ABC123
 2025-11-24 10:17:44 | INFO | main | Сохранён номер авто: BTN234
 2025-11-24 10:30:28 | INFO | main | Сохранён номер авто: BVU768
+2025-11-24 10:46:31 | INFO | main | Сохранён номер авто: ABC123
+2025-11-24 10:46:31 | INFO | main | Номер ABC123 найден в базе, билеты: ['TICKET-001']
+2025-11-24 10:46:32 | WARNING | piper.phoneme_ids | Missing phoneme from id map: 1
+2025-11-24 11:04:55 | INFO | main | Сохранён номер авто: JKL876
+2025-11-24 11:04:55 | INFO | main | Номер JKL876 не зарегистрирован в HISTORY
+2025-11-24 11:12:11 | INFO | main | Сохранён номер авто: HNI781
+2025-11-24 11:12:11 | INFO | main | Номер HNI781 не зарегистрирован в HISTORY
+2025-11-24 11:17:09 | INFO | main | Сохранён номер авто: BVC123
+2025-11-24 11:17:09 | INFO | main | Номер BVC123 не зарегистрирован в HISTORY
+2025-11-24 11:19:59 | INFO | main | Сохранён номер авто: VBC123
+2025-11-24 11:19:59 | INFO | main | Номер VBC123 не зарегистрирован в HISTORY
+2025-11-24 11:21:27 | INFO | main | Сохранён номер авто: AFV456
+2025-11-24 11:21:27 | INFO | main | Номер AFV456 не зарегистрирован в HISTORY
+2025-11-24 11:27:22 | ERROR | main | Не удалось инициализировать STT-модуль: 'VoiceOrchestrator' object has no attribute 'set_stt_service'
+2025-11-24 11:28:24 | ERROR | main | Не удалось инициализировать STT-модуль: 'VoiceOrchestrator' object has no attribute 'set_stt_service'
+2025-11-24 11:28:38 | ERROR | main | Не удалось инициализировать STT-модуль: 'VoiceOrchestrator' object has no attribute 'set_stt_service'
+2025-11-24 11:31:31 | ERROR | main | Не удалось инициализировать STT-модуль: 'VoiceOrchestrator' object has no attribute 'set_stt_service'
+2025-11-24 11:32:29 | ERROR | main | Не удалось инициализировать STT-модуль: 'VoiceOrchestrator' object has no attribute 'set_stt_service'
+2025-11-24 11:33:39 | ERROR | main | Не удалось инициализировать STT-модуль: 'VoiceOrchestrator' object has no attribute 'set_stt_service'

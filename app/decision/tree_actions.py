@@ -1,5 +1,16 @@
+import time
 class TreeActions:
-    def __init__(self):
+    def __init__(self, tree: dict, stt=None):
+        # Сохраняем дерево
+        self.tree = tree
+        self.stt = stt
+
+        # Определяем стартовый узел
+        self.start_node = "start"
+        if self.start_node not in tree:
+            raise ValueError("В дереве отсутствует узел 'start'")
+
+        # Контекст переменных
         self.context = {
             "plate_recognized": False,
             "failures": 0,
@@ -9,7 +20,8 @@ class TreeActions:
             "NB_TOTPAI": 0,
             "CUR_TIME": 0,
             "DHMP": 0,
-            "N": 20
+            "N": 20,
+            "last_input": ""
         }
 
     # ----- ДЕЙСТВИЯ -----
@@ -17,12 +29,26 @@ class TreeActions:
     def detect_car(self):
         print("[ACTION] detect_car")
         return True
+    
+    def check_plate_recognized(self):
+        """
+        Проверка, распознан ли номер и есть ли он в истории.
+        """
+        plate = self.context.get("BS_N_LICPLA", "")
+        if not plate:
+            self.context["plate_recognized"] = False
+            return False
 
-    def detect_plate(self):
-        print("[ACTION] detect_plate")
-        # пример: ставим plate_recognized=True
-        self.context["plate_recognized"] = True
-        return True
+        history = self.repository.find_history_by_plate(plate)
+        recognized = len(history) > 0
+        self.context["plate_recognized"] = recognized
+        print(f"[CHECK] plate_recognized = {recognized}")
+        return recognized
+
+    # def detect_plate(self):
+    #     print("[ACTION] detect_plate")
+    #     self.context["plate_recognized"] = True
+    #     return True
 
     def say(self, text):
         print("[SAY]", text)
@@ -36,6 +62,38 @@ class TreeActions:
         print("[ACTION] call_operator")
         return True
 
+    def listen(self, duration=5, timeout=10):
+        if self.stt is None:
+            raise ValueError("STT-модуль не инициализирован!")
+
+        result_queue = []
+
+        def on_transcript(text: str, lang: str) -> None:
+            print(f"[LISTEN] Распознано [{lang}]: {text}")
+            result_queue.append(text)
+
+        print(f"[LISTEN] Слушаю микрофон {duration} секунд...")
+        self.stt.transcribe_microphone(
+            duration=duration,
+            callback=on_transcript,
+            show_resources=False
+        )
+
+        waited = 0
+        while not result_queue and waited < timeout:
+            time.sleep(0.1)
+            waited += 0.1
+
+        if not result_queue:
+            print("[WARN] Время ожидания превышено, результат не получен")
+            self.context["last_input"] = ""
+            return ""
+
+        user_input = result_queue[0]
+        self.context["last_input"] = user_input
+        return user_input
+
+    
     # ----- СЧЕТЧИКИ -----
 
     def increment_failures(self):
@@ -46,15 +104,12 @@ class TreeActions:
     # ----- УСЛОВИЯ -----
 
     def evaluate_condition(self, expression: str) -> bool:
-        """
-        expression — строка вида:
-           "plate_recognized"
-           "T_MONTANT == 0"
-           "BS_N_LICPLA in BE_N_LICPLA"
-           "failures >= 2"
-        """
+        # Если expression — имя метода класса
+        if hasattr(self, expression.replace("()", "")):
+            return getattr(self, expression.replace("()", ""))()
         try:
             return bool(eval(expression, {}, self.context))
         except Exception as e:
-            print("[ERROR] evaluate_condition:", expression, e)
+            print("[ERROR] eval:", expression, e)
             return False
+

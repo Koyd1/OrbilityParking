@@ -3,6 +3,7 @@ import logging
 from pathlib import Path
 
 from app.config import AppConfig
+from app.decision import engine
 from app.orchestrator import VoiceOrchestrator
 from stt_module.stt import WhisperSTT
 from app.decision.tree_engine import DecisionTreeEngine
@@ -19,7 +20,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--duration",
         type=int,
-        default=60,
+        default=10,
         help="Сколько секунд слушать микрофон (demo режим)",
     )
     parser.add_argument(
@@ -44,24 +45,30 @@ def main() -> None:
             log.warning("TTS voice не задан (env TTS_VOICE_PATH) и файл по умолчанию не найден.")
 
     orchestrator = VoiceOrchestrator(config)
+    try:
+        stt = WhisperSTT(model_size=config.stt_model_size)
+        orchestrator.set_stt_service(stt)
+    except Exception as e:
+        log.error("Не удалось инициализировать STT-модуль: %s", e)
 
-    plate = input("Камера: введите номер авто: ").strip()
-    if plate:
-        orchestrator.repo.save_car_event(plate=plate, source="camera_mock")
-        log.info("Сохранён номер авто: %s", plate)
-        history_hits = orchestrator.repo.find_history_by_plate(plate)
-        if history_hits:
-            msg = f"Номер {plate} найден в базе, билеты: {[h.get('BE_N_NUMTIT') for h in history_hits]}"
-            print(msg)
-            log.info(msg)
-            if getattr(orchestrator, "tts_service", None):
-                orchestrator.tts_service.speak(msg)
-        else:
-            msg = f"Номер {plate} не зарегистрирован в HISTORY"
-            print(msg)
-            log.info(msg)
-            if getattr(orchestrator, "tts_service", None):
-                orchestrator.tts_service.speak(msg)
+
+    # plate = input("Камера: введите номер авто: ").strip()
+    # if plate:
+    #     orchestrator.repo.save_car_event(plate=plate, source="camera_mock")
+    #     log.info("Сохранён номер авто: %s", plate)
+    #     history_hits = orchestrator.repo.find_history_by_plate(plate)
+    #     if history_hits:
+    #         msg = f"Номер {plate} найден в базе, билеты: {[h.get('BE_N_NUMTIT') for h in history_hits]}"
+    #         print(msg)
+    #         log.info(msg)
+    #         if getattr(orchestrator, "tts_service", None):
+    #             orchestrator.tts_service.speak(msg)
+    #     else:
+    #         msg = f"Номер {plate} не зарегистрирован в HISTORY"
+    #         print(msg)
+    #         log.info(msg)
+    #         if getattr(orchestrator, "tts_service", None):
+    #             orchestrator.tts_service.speak(msg)
 
     # try:
     #     stt = WhisperSTT(model_size=config.stt_model_size)
@@ -83,6 +90,7 @@ def main() -> None:
     # finally:
     #     log.info("Завершение работы.")
     engine = DecisionTreeEngine("decision_tree.json")
+    engine.actions.stt = stt
 
     engine.run()
 

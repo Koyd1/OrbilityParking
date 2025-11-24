@@ -8,7 +8,7 @@ class DecisionTreeEngine:
         with open(json_path, "r", encoding="utf-8") as f:
             self.tree = json.load(f)
 
-        self.actions = TreeActions()
+        self.actions = TreeActions(tree=self.tree)
 
     def run(self, start_node="start"):
         current = start_node
@@ -32,11 +32,11 @@ class DecisionTreeEngine:
                 print("\n[DONE] Dialogue finished.")
                 return
 
-            # 2. Если есть listen → пропускаем (примерная логика)
             if node.get("listen"):
-                print("[LISTEN] waiting for user input...")
-                # user_input = input("> ")
-                pass
+                user_input = self.actions.listen()
+                print(f"[CONTEXT] last_input = {user_input}")
+
+
 
             # 3. Проверка условий
             if "condition" in node:

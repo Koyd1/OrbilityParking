@@ -5,7 +5,7 @@
   },
   "detect_license_plate": {
     "action": "detect_plate",
-    "condition": "plate_recognized",
+    "condition": "check_plate_recognized()",
     "yes": "verify_plate_match",
     "no": "ask_spell_plate"
   },
