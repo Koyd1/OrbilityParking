@@ -20,7 +20,7 @@
     "no": {
       "counter": "increment_failures",
       "condition": "failures >= 2",
-      "yes": "call_operator",
+      "yes": "say_call_operator",
       "no": "ask_spell_plate"
     }
   },
@@ -36,7 +36,7 @@
   },
   "check_time_diff": {
     "condition": "CUR_TIME - DHMP < N",
-    "yes": "call_operator ",
+    "yes": "say_call_operator",
     "no": "say_time_expired"
   },
   "say_not_paid": {
@@ -51,10 +51,15 @@
     "action": "open_barrier",
     "next": "dialogue_closed"
   },
+    "say_call_operator": {
+    "action": "say: Please wait, connecting to an operator.",
+    "next": "call_operator"
+  },
   "call_operator": {
     "action": "call_operator",
     "next": "dialogue_closed"
   },
+  
   "dialogue_closed": {
     "action": "end"
   }

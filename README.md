@@ -17,6 +17,13 @@ py -3.10 -m venv .venv
 .\.venv\Scripts\activate # MacOS: source3 .venv/bin/activate
 pip install -r requirements.txt
 ```
+# macOS
+```
+brew install python@3.10
+python3.10 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
 
 ## Конфигурация
 Через переменные окружения или значения по умолчанию (`app/config.py`):
@@ -32,6 +39,8 @@ pip install -r requirements.txt
 python main.py --duration 60           # слушать 60 секунд
 python main.py --duration 60 --resources  # с выводом статистики ресурсов
 ```
+
+
 Порядок работы:
 1. Запрашивает номер авто и сохраняет как событие камеры.
 2. Слушает микрофон, транскрибирует, прогоняет через NLU/decision, сохраняет в БД, озвучивает ответ (если найден голос).
