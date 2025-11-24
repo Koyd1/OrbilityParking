@@ -1,0 +1,61 @@
+{
+  "start": {
+    "action": "detect_car",
+    "next": "detect_license_plate"
+  },
+  "detect_license_plate": {
+    "action": "detect_plate",
+    "condition": "plate_recognized",
+    "yes": "verify_plate_match",
+    "no": "ask_spell_plate"
+  },
+  "ask_spell_plate": {
+    "action": "say: Spell the license plate, please",
+    "listen": true,
+    "next": "verify_plate_match"
+  },
+  "verify_plate_match": {
+    "condition": "BS_N_LICPLA in BE_N_LICPLA",
+    "yes": "check_payment_status",
+    "no": {
+      "counter": "increment_failures",
+      "condition": "failures >= 2",
+      "yes": "call_operator",
+      "no": "ask_spell_plate"
+    }
+  },
+  "check_payment_status": {
+    "condition": "T_MONTANT == 0",
+    "yes": "open_barrier",
+    "no": "check_totpai"
+  },
+  "check_totpai": {
+    "condition": "NB_TOTPAI > 0",
+    "yes": "check_time_diff",
+    "no": "say_not_paid"
+  },
+  "check_time_diff": {
+    "condition": "CUR_TIME - DHMP < N",
+    "yes": "call_operator ",
+    "no": "say_time_expired"
+  },
+  "say_not_paid": {
+    "action": "say: Your session is not paid. Please pay at the terminal.",
+    "next": "dialogue_closed"
+  },
+  "say_time_expired": {
+    "action": "say: You paid at DHMP. Free time is over, and you have to pay the new session at the terminal.",
+    "next": "dialogue_closed"
+  },
+  "open_barrier": {
+    "action": "open_barrier",
+    "next": "dialogue_closed"
+  },
+  "call_operator": {
+    "action": "call_operator",
+    "next": "dialogue_closed"
+  },
+  "dialogue_closed": {
+    "action": "end"
+  }
+}
