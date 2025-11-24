@@ -2,7 +2,6 @@
 import json
 from app.decision.tree_actions import TreeActions
 
-
 class DecisionTreeEngine:
     def __init__(self, json_path):
         with open(json_path, "r", encoding="utf-8") as f:
@@ -10,35 +9,42 @@ class DecisionTreeEngine:
 
         self.actions = TreeActions(tree=self.tree)
 
-    def run(self, start_node="start"):
+    def run(self, start_node="start", final_intent="fallback"):
         current = start_node
 
         while True:
             node = self.tree[current]
             print(f"\n=== NODE: {current} ===")
 
-            # 1. Выполнить action
+            # ----- 1. Выполнить action -----
             if "action" in node:
                 action = node["action"]
+
                 if action.startswith("say:"):
                     text = action.split("say:", 1)[1].strip()
                     self.actions.say(text)
+                    self.actions.buffer_interaction(action="say", response=text)
+
                 elif hasattr(self.actions, action):
                     getattr(self.actions, action)()
-                elif action != "end":
+                    self.actions.buffer_interaction(action=action, response="")
+
+                elif action == "end":
+                    # Конец диалога — сохраняем всю сессию одним решением
+                    self.actions.commit_session(final_intent=final_intent)
+                    print("\n[DONE] Dialogue finished.")
+                    return
+
+                else:
                     print("[WARNING] Unknown action:", action)
 
-            if node.get("action") == "end":
-                print("\n[DONE] Dialogue finished.")
-                return
-
+            # ----- 2. Слушаем пользователя -----
             if node.get("listen"):
                 user_input = self.actions.listen()
                 print(f"[CONTEXT] last_input = {user_input}")
+                self.actions.buffer_interaction(action="listen", response="")
 
-
-
-            # 3. Проверка условий
+            # ----- 3. Проверка условий -----
             if "condition" in node:
                 condition = node["condition"]
                 result = self.actions.evaluate_condition(condition)
@@ -48,9 +54,8 @@ class DecisionTreeEngine:
                 else:
                     next_node = node["no"]
 
-                # Если ветка "no" — вложенный объект
+                # Если ветка "no" — вложенный объект с counter/condition
                 if isinstance(next_node, dict):
-                    # Выполнить counter
                     if "counter" in next_node:
                         getattr(self.actions, next_node["counter"])()
 
@@ -65,10 +70,13 @@ class DecisionTreeEngine:
                     current = next_node
                     continue
 
-            # 4. Если нет условий — просто next
-            if "next" in node:
+            # ----- 4. Просто next -----
+            elif "next" in node:
                 current = node["next"]
                 continue
 
-            print("[ERROR] Node has no next step:", current)
-            return
+            else:
+                # Нет next и нет action — диалог закончился
+                self.actions.commit_session(final_intent=final_intent)
+                print("[ERROR] Node has no next step, committing session:", current)
+                return

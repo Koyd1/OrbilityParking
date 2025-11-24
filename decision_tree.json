@@ -25,7 +25,7 @@
     }
   },
   "check_payment_status": {
-    "condition": "T_MONTANT == 0",
+    "condition": "check_payment_status()",
     "yes": "open_barrier",
     "no": "check_totpai"
   },
