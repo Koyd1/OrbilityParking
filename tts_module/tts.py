@@ -16,6 +16,7 @@ piper_tts_module.py
 
     tts.synth_and_play("Hello world!")
 """
+import threading
 
 import os
 import wave
@@ -92,7 +93,6 @@ class PiperTTS:
         finally:
             if os.path.exists(tmp):
                 os.remove(tmp)
-
 
 if __name__ == "__main__":
 
