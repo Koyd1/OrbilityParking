@@ -15,7 +15,7 @@
     "next": "verify_plate_match"
   },
   "verify_plate_match": {
-    "condition": "BS_N_LICPLA in BE_N_LICPLA",
+    "condition": "check_plate_recognized()",
     "yes": "check_payment_status",
     "no": {
       "counter": "increment_failures",

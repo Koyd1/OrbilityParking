@@ -80,38 +80,19 @@ class PiperTTS:
         play_obj = wave_obj.play()
         play_obj.wait_done()
 
-    # def synth_and_play(self, text: str, voice: Optional[str] = None) -> None:
-    #     """
-    #     Синтезирует текст во временный файл и сразу воспроизводит его.
-    #     """
-    #     fd, tmp = tempfile.mkstemp(suffix=".wav")
-    #     os.close(fd)
-
-    #     try:
-    #         self.synthesize_to_file(text, tmp, voice=voice)
-    #         self.play_file(tmp)
-    #     finally:
-    #         if os.path.exists(tmp):
-    #             os.remove(tmp)
     def synth_and_play(self, text: str, voice: Optional[str] = None) -> None:
-        import tempfile, os
+        """
+        Синтезирует текст во временный файл и сразу воспроизводит его.
+        """
         fd, tmp = tempfile.mkstemp(suffix=".wav")
         os.close(fd)
 
         try:
             self.synthesize_to_file(text, tmp, voice=voice)
-            # Воспроизведение синхронно, без потоков
-            import simpleaudio as sa
-            wave_obj = sa.WaveObject.from_wave_file(tmp)
-            play_obj = wave_obj.play()
-            play_obj.wait_done()
+            self.play_file(tmp)
         finally:
             if os.path.exists(tmp):
                 os.remove(tmp)
-
-
-
-
 
 if __name__ == "__main__":
 

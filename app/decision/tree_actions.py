@@ -1,5 +1,8 @@
 import time
-from tts_module.tts import PiperTTS
+
+from app.config import AppConfig
+from app.db.database import Database
+from app.db.repository import ConversationRepository
 class TreeActions:
     def __init__(self, tree: dict, stt=None, tts=None):
         # Сохраняем дерево
@@ -35,12 +38,17 @@ class TreeActions:
         """
         Проверка, распознан ли номер и есть ли он в истории.
         """
+        # Use the application's configured database to look up HISTORY.
+        cfg = AppConfig.from_env()
+        db = Database(cfg.db_path)
+        repo = ConversationRepository(db)
+
         plate = self.context.get("BS_N_LICPLA", "")
         if not plate:
             self.context["plate_recognized"] = False
             return False
 
-        history = self.repository.find_history_by_plate(plate)
+        history = repo.find_history_by_plate(plate)
         recognized = len(history) > 0
         self.context["plate_recognized"] = recognized
         print(f"[CHECK] plate_recognized = {recognized}")
@@ -101,10 +109,12 @@ class TreeActions:
             return ""
 
         user_input = result_queue[0]
-        user_input = self.stt.extract_plate_num(user_input)
-        print(f"[LISTEN] Итоговый результат: {user_input}")
         self.context["last_input"] = user_input
-        return user_input
+        print(f"[LISTEN] Итоговый результат: {user_input}")
+        user_plate = self.stt.extract_plate_num(user_input)
+        print(f"[LISTEN] Распознанный номер: {user_plate}")
+        self.context["BS_N_LICPLA"] = user_plate
+        return user_plate
 
     
     # ----- СЧЕТЧИКИ -----

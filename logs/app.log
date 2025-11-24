@@ -36,3 +36,13 @@
 2025-11-24 11:31:31 | ERROR | main | Не удалось инициализировать STT-модуль: 'VoiceOrchestrator' object has no attribute 'set_stt_service'
 2025-11-24 11:32:29 | ERROR | main | Не удалось инициализировать STT-модуль: 'VoiceOrchestrator' object has no attribute 'set_stt_service'
 2025-11-24 11:33:39 | ERROR | main | Не удалось инициализировать STT-модуль: 'VoiceOrchestrator' object has no attribute 'set_stt_service'
+2025-11-24 14:45:39 | ERROR | app.services.tts_service | TTS subprocess failed (code=1). stderr=Traceback (most recent call last):
+  File "/Users/rima/dev/orbility/OrbilityParking/tts_module/runner.py", line 10, in <module>
+    from tts_module.tts import PiperTTS
+ModuleNotFoundError: No module named 'tts_module' stdout=
+2025-11-24 14:45:47 | ERROR | app.services.tts_service | TTS subprocess failed (code=1). stderr=Traceback (most recent call last):
+  File "/Users/rima/dev/orbility/OrbilityParking/tts_module/runner.py", line 10, in <module>
+    from tts_module.tts import PiperTTS
+ModuleNotFoundError: No module named 'tts_module' stdout=
+2025-11-24 14:46:29 | ERROR | app.services.tts_service | TTS subprocess failed (code=-11). stderr= stdout=
+2025-11-24 14:46:50 | ERROR | app.services.tts_service | TTS subprocess failed (code=-11). stderr= stdout=

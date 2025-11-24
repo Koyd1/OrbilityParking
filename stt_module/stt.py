@@ -74,7 +74,7 @@ class WhisperSTT:
                 accumulated_audio = np.concatenate([accumulated_audio, chunk])
 
                 # Если накоплено >= 4 секунд — транскрибировать
-                if len(accumulated_audio) >= self.sample_rate * 4:
+                if len(accumulated_audio) >= self.sample_rate * 7:
                     text, lang = self.transcribe_buffer(accumulated_audio)
                     if text.strip():
                         if self.transcript_callback:

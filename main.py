@@ -10,7 +10,6 @@ from app.services.tts_service import TTSService
 
 from app.decision.tree_engine import DecisionTreeEngine
 
-
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="OrbilityParking voice pipeline")
     parser.add_argument(
@@ -23,7 +22,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--duration",
         type=int,
         default=10,
-        help="Сколько секунд слушать микрофон (demo режим)",
+        help="Сколько секунд слушать микрофон",
     )
     parser.add_argument(
         "--resources",
@@ -101,7 +100,6 @@ def main() -> None:
     engine.actions.tts = tts
 
     engine.run()
-
 
 if __name__ == "__main__":
     main()
