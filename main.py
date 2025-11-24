@@ -5,6 +5,7 @@ from pathlib import Path
 from app.config import AppConfig
 from app.orchestrator import VoiceOrchestrator
 from stt_module.stt import WhisperSTT
+from app.decision.tree_engine import DecisionTreeEngine
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -49,25 +50,28 @@ def main() -> None:
         orchestrator.repo.save_car_event(plate=plate, source="camera_mock")
         log.info("Сохранён номер авто: %s", plate)
 
-    try:
-        stt = WhisperSTT(model_size=config.stt_model_size)
+    # try:
+    #     stt = WhisperSTT(model_size=config.stt_model_size)
 
-        def on_transcript(text: str, lang: str) -> None:
-            log.info("Распознано [%s]: %s", lang, text)
-            decision = orchestrator.handle_text(text=text, language=lang)
-            log.info("Решение: %s", decision)
+    #     def on_transcript(text: str, lang: str) -> None:
+    #         log.info("Распознано [%s]: %s", lang, text)
+    #         decision = orchestrator.handle_text(text=text, language=lang)
+    #         log.info("Решение: %s", decision)
 
-        log.info("Слушаю микрофон %s секунд... Нажмите Ctrl+C для выхода.", args.duration)
-        stt.transcribe_microphone(
-            duration=args.duration,
-            callback=on_transcript,
-            show_resources=args.resources,
-        )
-        log.info("Прослушивание завершено.")
-    except KeyboardInterrupt:
-        log.info("Interrupted by user, stopping...")
-    finally:
-        log.info("Завершение работы.")
+    #     log.info("Слушаю микрофон %s секунд... Нажмите Ctrl+C для выхода.", args.duration)
+    #     stt.transcribe_microphone(
+    #         duration=args.duration,
+    #         callback=on_transcript,
+    #         show_resources=args.resources,
+    #     )
+    #     log.info("Прослушивание завершено.")
+    # except KeyboardInterrupt:
+    #     log.info("Interrupted by user, stopping...")
+    # finally:
+    #     log.info("Завершение работы.")
+    engine = DecisionTreeEngine("decision_tree.json")
+
+    engine.run()
 
 
 if __name__ == "__main__":

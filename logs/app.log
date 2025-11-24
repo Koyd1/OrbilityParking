@@ -10,3 +10,9 @@
 2025-11-24 08:53:36 | INFO | main | Слушаю микрофон 60 секунд... Нажмите Ctrl+C для выхода.
 2025-11-24 08:53:43 | INFO | main | Распознано [en]:  Hello, can you help me?
 2025-11-24 08:53:43 | INFO | app.orchestrator | Transcript received:  Hello, can you help me?
+2025-11-24 09:04:28 | INFO | main | Сохранён номер авто: ABC123
+2025-11-24 09:04:31 | INFO | main | Слушаю микрофон 60 секунд... Нажмите Ctrl+C для выхода.
+2025-11-24 09:04:42 | INFO | main | Распознано [en]:  Hello, can you help me please?
+2025-11-24 09:04:42 | INFO | app.orchestrator | Transcript received:  Hello, can you help me please?
+2025-11-24 10:15:06 | INFO | main | Сохранён номер авто: ABC123
+2025-11-24 10:17:44 | INFO | main | Сохранён номер авто: BTN234
