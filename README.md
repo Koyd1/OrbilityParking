@@ -10,7 +10,7 @@
 - TTS через Piper (`tts_module/tts.py`) с готовой моделью `tts_module/models/en_US-ryan-low.onnx`.
 - CLI (`main.py`) спрашивает номер авто (имитация камеры) и запускает прослушивание микрофона.
 
-## Установка
+## Установка на Windows
 ```bash
 py install 3.10
 py -3.10 -m venv .venv
@@ -27,12 +27,12 @@ pip install -r requirements.txt
 
 ## Конфигурация
 Через переменные окружения или значения по умолчанию (`app/config.py`):
-- `DATA_DIR` — каталог данных (`data/`)
-- `DB_PATH` — путь к SQLite (`data/app.sqlite3`)
-- `DECISION_TREE_PATH` — путь к дереву решений (`decision_tree.json`)
+- `DATA_DIR` - каталог данных (`data/`)
+- `DB_PATH` - путь к SQLite (`data/app.sqlite3`)
+- `DECISION_TREE_PATH` - путь к дереву решений (`decision_tree.json`)
 - `LOG_DIR`, `LOG_LEVEL`
-- `STT_MODEL_SIZE` — размер модели Whisper (`small` по умолчанию)
-- `TTS_VOICE_PATH` — путь к .onnx модели Piper (по умолчанию пытается `tts_module/models/en_US-ryan-low.onnx`)
+- `STT_MODEL_SIZE` - размер модели Whisper (`small` по умолчанию)
+- `TTS_VOICE_PATH` - путь к .onnx модели Piper (по умолчанию пытается `tts_module/models/en_US-ryan-low.onnx`)
 
 ## Запуск
 ```bash
@@ -45,7 +45,7 @@ python main.py --duration 60 --resources  # с выводом статистик
 1. Запрашивает номер авто и сохраняет как событие камеры.
 2. Слушает микрофон, транскрибирует, прогоняет через NLU/decision, сохраняет в БД, озвучивает ответ (если найден голос).
 
-Прекращение — `Ctrl+C`.
+Прекращение - `Ctrl+C`.
 
 ## Структура
 - `main.py` — CLI, точка входа.
@@ -58,6 +58,15 @@ python main.py --duration 60 --resources  # с выводом статистик
 - `app/services/` — тонкие адаптеры над готовыми STT/TTS модулями.
 - `decision_tree.json` — intents, паттерны и ответы.
 - `tts_module/`, `stt_module/` — готовые реализации TTS/STT (не менять).
+
+## Установка SQLite на Windows
+```cmd
+winget install SQLite.SQLite
+sqlite3 --version 
+cd D:\Projects\OrbilityParking #Your path 
+sqlite3 data/app.sqlite3  
+```
+##### Exit: ctrl+C
 
 ## Работа с SQLite
 - Файл БД по умолчанию: `data/app.sqlite3`. Создаётся автоматически при первом запуске.
@@ -77,14 +86,3 @@ python main.py --duration 60 --resources  # с выводом статистик
   );
   SQL
   ```
-
-## Кастомизация
-- Добавить паттерны/ответы: редактировать `decision_tree.json`.
-- Заменить NLU на ML-модель: реализовать тот же интерфейс в `IntentClassifier`.
-- Подключить другие действия: расширить `DecisionEngine` (action != "say") и добавить обработчики.
-- Историю расширить — добавить таблицы/методы в `app/db`.
-
-## Советы по отладке
-- Включите `--resources` для мониторинга памяти/CPU STT.
-- Проверяйте наличие `TTS_VOICE_PATH`, иначе голос не проигрывается.
-- Логи: `logs/app.log`.
