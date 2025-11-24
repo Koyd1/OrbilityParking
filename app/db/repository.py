@@ -78,3 +78,68 @@ class ConversationRepository:
             "issue_ticket",
             {"intent": "issue_ticket", "action": "say", "payload": {"device": "ticket_machine", "command": "issue"}},
         )
+
+    def seed_history_sample(self) -> None:
+        """
+        Populate HISTORY with a couple of demo rows if empty.
+        """
+        rows = self.db.fetchall("SELECT COUNT(*) as cnt FROM HISTORY")
+        if rows and rows[0]["cnt"] > 0:
+            return
+
+        entries = [
+            {
+                "N_PAR": 1,
+                "BE_N_NUMTIT": "TICKET-001",
+                "BE_D_DATTRA": "2025-01-01T10:00:00",
+                "BE_N_EQU": 3,
+                "NB_TOTPAI": 1,
+                "N_CNTPRI": "CNT-100",
+                "T_FAMTIT": 1,
+                "BE_N_LICPLA": "ABC123",
+                "BS_D_DATTRA": "2025-01-01T12:30:00",
+                "BS_N_LICPLA": "ABC123",
+                "TXT_COMMENT": "Demo entry/exit",
+            },
+            {
+                "N_PAR": 2,
+                "BE_N_NUMTIT": "TICKET-002",
+                "BE_D_DATTRA": "2025-02-10T09:15:00",
+                "BE_N_EQU": 2,
+                "NB_TOTPAI": 1,
+                "N_CNTPRI": "CNT-200",
+                "T_FAMTIT": 1,
+                "BE_N_LICPLA": "XYZ789",
+                "BS_D_DATTRA": None,
+                "BS_N_LICPLA": None,
+                "TXT_COMMENT": "In parking, exit pending",
+            },
+        ]
+
+        cols = entries[0].keys()
+        placeholders = ", ".join(["?" for _ in cols])
+        col_names = ", ".join(cols)
+        query = f"INSERT INTO HISTORY ({col_names}) VALUES ({placeholders})"
+
+        with self.db.connect() as conn:
+            for row in entries:
+                conn.execute(query, tuple(row.values()))
+            conn.commit()
+
+    def find_history_by_plate(self, plate: str) -> list[dict[str, Any]]:
+        """
+        Find HISTORY records where plate matches entry/exit/alternate plate fields (case-insensitive).
+        """
+        normalized = plate.strip().upper()
+        query = """
+        SELECT * FROM HISTORY
+        WHERE UPPER(BE_N_LICPLA) = ?
+           OR UPPER(BS_N_LICPLA) = ?
+           OR UPPER(BE_N_LICPLA_CR) = ?
+           OR UPPER(BS_N_LICPLA_CR) = ?
+           OR UPPER(N_LICPLA_BIS) = ?
+        """
+        rows = self.db.fetchall(
+            query, (normalized, normalized, normalized, normalized, normalized)
+        )
+        return [dict(row) for row in rows]

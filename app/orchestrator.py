@@ -25,6 +25,7 @@ class VoiceOrchestrator:
         self.db = Database(self.config.db_path)
         self.repo = ConversationRepository(self.db)
         self.repo.seed_sample_data()
+        self.repo.seed_history_sample()
 
         self.nlu = IntentClassifier(rules_path=self.config.decision_tree_path)
         self.decision_engine = DecisionEngine(self.config.decision_tree_path)
