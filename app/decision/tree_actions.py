@@ -1,10 +1,11 @@
 import time
+from tts_module.tts import PiperTTS
 class TreeActions:
-    def __init__(self, tree: dict, stt=None):
+    def __init__(self, tree: dict, stt=None, tts=None):
         # Сохраняем дерево
         self.tree = tree
         self.stt = stt
-
+        self.tts = tts
         # Определяем стартовый узел
         self.start_node = "start"
         if self.start_node not in tree:
@@ -50,9 +51,19 @@ class TreeActions:
     #     self.context["plate_recognized"] = True
     #     return True
 
-    def say(self, text):
+    def say(self, text: str):
         print("[SAY]", text)
+        if self.tts:
+            try:
+                # Запуск в отдельном потоке безопаснее
+                import threading
+                t = threading.Thread(target=self.tts.speak, args=(text,))
+                t.start()
+                t.join()  # Ждём окончания воспроизведения перед продолжением дерева
+            except Exception as e:
+                print("[ERROR] TTS failed:", e)
         return True
+
 
     def open_barrier(self):
         print("[ACTION] open_barrier")
@@ -62,7 +73,7 @@ class TreeActions:
         print("[ACTION] call_operator")
         return True
 
-    def listen(self, duration=5, timeout=10):
+    def listen(self, duration=7, timeout=10):
         if self.stt is None:
             raise ValueError("STT-модуль не инициализирован!")
 
@@ -90,6 +101,8 @@ class TreeActions:
             return ""
 
         user_input = result_queue[0]
+        user_input = self.stt.extract_plate_num(user_input)
+        print(f"[LISTEN] Итоговый результат: {user_input}")
         self.context["last_input"] = user_input
         return user_input
 

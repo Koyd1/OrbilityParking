@@ -6,6 +6,8 @@ from app.config import AppConfig
 from app.decision import engine
 from app.orchestrator import VoiceOrchestrator
 from stt_module.stt import WhisperSTT
+from app.services.tts_service import TTSService
+
 from app.decision.tree_engine import DecisionTreeEngine
 
 
@@ -47,10 +49,15 @@ def main() -> None:
     orchestrator = VoiceOrchestrator(config)
     try:
         stt = WhisperSTT(model_size=config.stt_model_size)
-        orchestrator.set_stt_service(stt)
+        # orchestrator.set_stt_service(stt)
     except Exception as e:
         log.error("Не удалось инициализировать STT-модуль: %s", e)
 
+    try:
+        tts = TTSService(voice_path=config.tts_voice_path)
+            # orchestrator.set_tts_service(tts)
+    except Exception as e:
+        log.error("Не удалось инициализировать TTS-модуль: %s", e)
 
     # plate = input("Камера: введите номер авто: ").strip()
     # if plate:
@@ -91,6 +98,7 @@ def main() -> None:
     #     log.info("Завершение работы.")
     engine = DecisionTreeEngine("decision_tree.json")
     engine.actions.stt = stt
+    engine.actions.tts = tts
 
     engine.run()
 
