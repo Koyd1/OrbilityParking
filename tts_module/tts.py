@@ -22,7 +22,16 @@ import os
 import wave
 import tempfile
 from typing import Optional
-import simpleaudio as sa
+# pygame for playback; winsound as a minimal built-in fallback on Windows
+try:
+    import pygame
+except ImportError:
+    pygame = None
+
+try:
+    import winsound  # type: ignore
+except ImportError:
+    winsound = None
 from piper import PiperVoice
 
 
@@ -70,15 +79,23 @@ class PiperTTS:
 
     def play_file(self, path: str) -> None:
         """
-        Проигрывает WAV-файл с помощью simpleaudio.
+        Проигрывает WAV-файл. Приоритет: pygame -> winsound -> ошибка.
         """
         path = os.path.abspath(path)
         if not os.path.exists(path):
             raise FileNotFoundError(path)
 
-        wave_obj = sa.WaveObject.from_wave_file(path)
-        play_obj = wave_obj.play()
-        play_obj.wait_done()
+        if pygame is not None:
+            if not pygame.mixer.get_init():
+                pygame.mixer.init()
+            sound = pygame.mixer.Sound(path)
+            channel = sound.play()
+            while channel.get_busy():
+                pygame.time.wait(50)
+        elif winsound is not None:
+            winsound.PlaySound(path, winsound.SND_FILENAME)
+        else:
+            raise RuntimeError("Audio playback unavailable: install pygame or run on Windows with winsound.")
 
     def synth_and_play(self, text: str, voice: Optional[str] = None) -> None:
         """

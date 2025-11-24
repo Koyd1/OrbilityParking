@@ -46,3 +46,17 @@ ModuleNotFoundError: No module named 'tts_module' stdout=
 ModuleNotFoundError: No module named 'tts_module' stdout=
 2025-11-24 14:46:29 | ERROR | app.services.tts_service | TTS subprocess failed (code=-11). stderr= stdout=
 2025-11-24 14:46:50 | ERROR | app.services.tts_service | TTS subprocess failed (code=-11). stderr= stdout=
+2025-11-24 18:44:03 | ERROR | app.services.tts_service | TTS subprocess failed (code=2). stderr=ERROR:root:TTS runner failed
+Traceback (most recent call last):
+  File "D:\Projects\OrbilityParking\tts_module\runner.py", line 32, in main
+    tts.synthesize_to_file(args.text, tmp, voice=args.voice)
+  File "D:\Projects\OrbilityParking\tts_module\tts.py", line 52, in synthesize_to_file
+    voice_obj = PiperVoice.load(model_path)
+NameError: name 'PiperVoice' is not defined stdout=
+2025-11-24 18:44:18 | ERROR | app.services.tts_service | TTS subprocess failed (code=2). stderr=ERROR:root:TTS runner failed
+Traceback (most recent call last):
+  File "D:\Projects\OrbilityParking\tts_module\runner.py", line 32, in main
+    tts.synthesize_to_file(args.text, tmp, voice=args.voice)
+  File "D:\Projects\OrbilityParking\tts_module\tts.py", line 52, in synthesize_to_file
+    voice_obj = PiperVoice.load(model_path)
+NameError: name 'PiperVoice' is not defined stdout=

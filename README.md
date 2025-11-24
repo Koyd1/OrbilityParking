@@ -12,8 +12,9 @@
 
 ## Установка
 ```bash
-python -m venv .venv
-source3 .venv/bin/activate  # Windows: .venv\Scripts\activate
+py install 3.10
+py -3.10 -m venv .venv
+.\.venv\Scripts\activate # MacOS: source3 .venv/bin/activate
 pip install -r requirements.txt
 ```
 
