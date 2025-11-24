@@ -55,9 +55,17 @@ python main.py --duration 60 --resources  # с выводом статистик
 - Стартовый набор данных: демо-транскрипты/решения и две записи в `HISTORY` добавляются при инициализации `ConversationRepository`.
 - Открыть БД через sqlite3:
   ```bash
+  cd D:\Projects\OrbilityParking #Windows
   sqlite3 data/app.sqlite3 ".tables"
+  ```
+  
+  ```bash
   sqlite3 data/app.sqlite3 "SELECT ID_HISTORY, BE_N_NUMTIT, BE_D_DATTRA, BE_N_LICPLA, NB_TOTPAI FROM HISTORY;"
   ```
+  ```SQL 
+  SELECT * FROM HISTORY;
+  ```
+
 - Добавить запись в HISTORY вручную (пример):
   ```bash
   sqlite3 data/app.sqlite3 <<'SQL'
