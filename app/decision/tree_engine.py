@@ -40,7 +40,9 @@ class DecisionTreeEngine:
 
             # ----- 2. Слушаем пользователя -----
             if node.get("listen"):
-                user_input = self.actions.listen()
+                listen_for = node.get("listen_for", "plate")
+                expect_plate = listen_for == "plate"
+                user_input = self.actions.listen(expect_plate=expect_plate)
                 print(f"[CONTEXT] last_input = {user_input}")
                 self.actions.buffer_interaction(action="listen", response="")
 
