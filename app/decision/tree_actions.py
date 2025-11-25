@@ -1,4 +1,5 @@
 import time
+import re
 
 from app.config import AppConfig
 from app.db.database import Database
@@ -14,6 +15,7 @@ class TreeActions:
         self.tree = tree
         self.stt = stt
         self.tts = tts
+        self._sentiment_analyzer = None  # lazy init transformers pipeline
         # Определяем стартовый узел
         self.start_node = "start"
         if self.start_node not in tree:
@@ -30,7 +32,8 @@ class TreeActions:
             "CUR_TIME": 0,
             "DHMP": 0,
             "N": 20,
-            "last_input": ""
+            "last_input": "",
+            "plate_confirmation": None,  # итог да/нет на подтверждении номера
         }
 
     # ----- ДЕЙСТВИЯ -----
@@ -61,11 +64,14 @@ class TreeActions:
     #     return True
 
     def say(self, text: str):
-        print("[SAY]", text)
+        # Подставляем номер авто в фразы вида {PLATE}
+        formatted = text.format(PLATE=self.context.get("BS_N_LICPLA", ""))
+
+        print("[SAY]", formatted)
         if self.tts:
             try:
                 import threading
-                t = threading.Thread(target=self.tts.speak, args=(text,))
+                t = threading.Thread(target=self.tts.speak, args=(formatted,))
                 t.start()
                 t.join() 
             except Exception as e:
@@ -94,7 +100,7 @@ class TreeActions:
         print("[ACTION] call_operator")
         return True
 
-    def listen(self, duration=7, timeout=10):
+    def listen(self, duration=7, timeout=10, expect_plate=True):
         if self.stt is None:
             raise ValueError("STT-модуль не инициализирован!")
 
@@ -124,12 +130,99 @@ class TreeActions:
         self.context["last_input"] = user_input
 
         print(f"[LISTEN] Итоговый результат: {user_input}")
-        user_plate = self.stt.extract_plate_num(user_input)
-        print(f"[LISTEN] Распознанный номер: {user_plate}")
-        self.context["BS_N_LICPLA"] = user_plate
-        return user_plate
-   
-    
+        if expect_plate:
+            user_plate = self.stt.extract_plate_num(user_input)
+            print(f"[LISTEN] Распознанный номер: {user_plate}")
+            self.context["BS_N_LICPLA"] = user_plate
+            # сбрасываем предыдущее подтверждение
+            self.context["plate_confirmation"] = None
+            return user_plate
+
+        # Сохраняем да/нет без изменений и пытаемся распознать подтверждение
+        confirmation = self._parse_confirmation(user_input)
+        if confirmation is None:
+            confirmation = self._predict_confirmation_with_transformers(user_input)
+        self.context["plate_confirmation"] = confirmation
+        print(f"[LISTEN] Подтверждение номера: {confirmation}")
+        return user_input
+
+    def _parse_confirmation(self, text: str):
+        normalized = text.strip().lower()
+        yes_words = {
+            # English
+            "yes", "y", "yeah", "yep", "sure", "correct", "right", "ok", "okay", "confirm", "confirmed", "exactly",
+            # Russian
+            "да", "ага", "верно", "правильно", "подтверждаю", "точно", "конечно",
+            # Spanish
+            "si", "sí", "claro", "vale", "correcto",
+            # French
+            "oui", "ouais", "dac", "daccord", "d'accord"
+        }
+        no_words = {
+            # English
+            "no", "n", "nope", "wrong", "not", "negative", "incorrect", "no sir",
+            # Russian
+            "нет", "неа", "неверно", "неправильно", "ошибка",
+            # Spanish
+            "no", "negativo", "incorrecto", "mal",
+            # French
+            "non", "pas", "pas du tout", "faux", "incorrect"
+        }
+
+        if normalized in yes_words:
+            return True
+        if normalized in no_words:
+            return False
+
+        tokens = re.findall(r"\w+", normalized)
+        if not tokens:
+            return None
+
+        # Проверяем первое слово (частый случай "да нормально")
+        first = tokens[0]
+        if first in yes_words:
+            return True
+        if first in no_words:
+            return False
+
+        # Проверяем все слова на наличие ключей
+        if any(tok in yes_words for tok in tokens):
+            return True
+        if any(tok in no_words for tok in tokens):
+            return False
+        return None
+
+    def _get_sentiment_analyzer(self):
+        if self._sentiment_analyzer is False:
+            return None
+        if self._sentiment_analyzer is None:
+            try:
+                from transformers import pipeline
+                self._sentiment_analyzer = pipeline("sentiment-analysis")
+            except Exception as e:
+                print(f"[WARN] Sentiment analyzer unavailable: {e}")
+                self._sentiment_analyzer = False
+        return self._sentiment_analyzer or None
+
+    def _predict_confirmation_with_transformers(self, text: str):
+        analyzer = self._get_sentiment_analyzer()
+        if analyzer is None:
+            return None
+        try:
+            # pipeline может принимать строку или список; отдаёт label + score
+            result = analyzer(text)[0]
+            label = str(result.get("label", "")).lower()
+            score = float(result.get("score", 0))
+            if score < 0.55:
+                return None
+            if "pos" in label or label.endswith("1"):
+                return True
+            if "neg" in label or label.endswith("0"):
+                return False
+        except Exception as e:
+            print(f"[WARN] Sentiment inference failed: {e}")
+        return None
+
     # ----- СЧЕТЧИКИ -----
 
     def increment_failures(self):
@@ -138,6 +231,21 @@ class TreeActions:
         return True
 
     # ----- УСЛОВИЯ -----
+
+    def plate_confirmed(self) -> bool:
+        """
+        Проверяем, ответил ли пользователь утвердительно на подтверждение номера.
+        """
+        result = self.context.get("plate_confirmation")
+        if result is None:
+            last_text = self.context.get("last_input", "")
+            result = self._parse_confirmation(last_text)
+            if result is None:
+                result = self._predict_confirmation_with_transformers(last_text)
+            self.context["plate_confirmation"] = result
+
+        print(f"[CHECK] plate_confirmation = {result}")
+        return result is True
 
     def evaluate_condition(self, expression: str) -> bool:
         # Если expression — имя метода класса
