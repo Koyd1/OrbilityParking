@@ -16,7 +16,7 @@ class AppConfig:
     log_dir: Path = Path("logs")
     log_level: str = os.getenv("LOG_LEVEL", "INFO")
     stt_model_size: str = os.getenv("STT_MODEL_SIZE", "small")
-    tts_voice_path: Optional[str] = os.getenv("TTS_VOICE_PATH")
+    tts_voice_path: Optional[str] = "tts_module/models/en_US-ryan-low.onnx"
 
     @classmethod
     def from_env(cls) -> "AppConfig":

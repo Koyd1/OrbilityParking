@@ -5,7 +5,7 @@
   },
   "detect_license_plate": {
     "action": "detect_plate",
-    "condition": "plate_recognized",
+    "condition": "check_plate_recognized()",
     "yes": "verify_plate_match",
     "no": "ask_spell_plate"
   },
@@ -15,17 +15,17 @@
     "next": "verify_plate_match"
   },
   "verify_plate_match": {
-    "condition": "BS_N_LICPLA in BE_N_LICPLA",
+    "condition": "check_plate_recognized()",
     "yes": "check_payment_status",
     "no": {
       "counter": "increment_failures",
       "condition": "failures >= 2",
-      "yes": "call_operator",
+      "yes": "say_call_operator",
       "no": "ask_spell_plate"
     }
   },
   "check_payment_status": {
-    "condition": "T_MONTANT == 0",
+    "condition": "check_payment_status()",
     "yes": "open_barrier",
     "no": "check_totpai"
   },
@@ -36,7 +36,7 @@
   },
   "check_time_diff": {
     "condition": "CUR_TIME - DHMP < N",
-    "yes": "call_operator ",
+    "yes": "say_call_operator",
     "no": "say_time_expired"
   },
   "say_not_paid": {
@@ -51,10 +51,15 @@
     "action": "open_barrier",
     "next": "dialogue_closed"
   },
+    "say_call_operator": {
+    "action": "say: Please wait, connecting to an operator.",
+    "next": "call_operator"
+  },
   "call_operator": {
     "action": "call_operator",
     "next": "dialogue_closed"
   },
+  
   "dialogue_closed": {
     "action": "end"
   }

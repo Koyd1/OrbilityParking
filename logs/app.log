@@ -10,12 +10,53 @@
 2025-11-24 08:53:36 | INFO | main | Слушаю микрофон 60 секунд... Нажмите Ctrl+C для выхода.
 2025-11-24 08:53:43 | INFO | main | Распознано [en]:  Hello, can you help me?
 2025-11-24 08:53:43 | INFO | app.orchestrator | Transcript received:  Hello, can you help me?
-2025-11-24 09:24:49 | INFO | main | Сохранён номер авто: 123ввв
-2025-11-24 09:24:51 | INFO | main | Слушаю микрофон 60 секунд... Нажмите Ctrl+C для выхода.
-2025-11-24 09:24:54 | INFO | main | Прослушивание завершено.
-2025-11-24 09:24:54 | INFO | main | Завершение работы.
-2025-11-24 09:26:34 | INFO | main | Сохранён номер авто: TTT333
-2025-11-24 09:26:34 | INFO | main | Номер TTT333 не зарегистрирован в HISTORY
-2025-11-24 09:27:00 | INFO | main | Сохранён номер авто: ABC123
-2025-11-24 09:27:00 | INFO | main | Номер ABC123 найден в базе, билеты: ['TICKET-001']
-2025-11-24 09:27:00 | WARNING | piper.phoneme_ids | Missing phoneme from id map: 1
+2025-11-24 09:04:28 | INFO | main | Сохранён номер авто: ABC123
+2025-11-24 09:04:31 | INFO | main | Слушаю микрофон 60 секунд... Нажмите Ctrl+C для выхода.
+2025-11-24 09:04:42 | INFO | main | Распознано [en]:  Hello, can you help me please?
+2025-11-24 09:04:42 | INFO | app.orchestrator | Transcript received:  Hello, can you help me please?
+2025-11-24 10:15:06 | INFO | main | Сохранён номер авто: ABC123
+2025-11-24 10:17:44 | INFO | main | Сохранён номер авто: BTN234
+2025-11-24 10:30:28 | INFO | main | Сохранён номер авто: BVU768
+2025-11-24 10:46:31 | INFO | main | Сохранён номер авто: ABC123
+2025-11-24 10:46:31 | INFO | main | Номер ABC123 найден в базе, билеты: ['TICKET-001']
+2025-11-24 10:46:32 | WARNING | piper.phoneme_ids | Missing phoneme from id map: 1
+2025-11-24 11:04:55 | INFO | main | Сохранён номер авто: JKL876
+2025-11-24 11:04:55 | INFO | main | Номер JKL876 не зарегистрирован в HISTORY
+2025-11-24 11:12:11 | INFO | main | Сохранён номер авто: HNI781
+2025-11-24 11:12:11 | INFO | main | Номер HNI781 не зарегистрирован в HISTORY
+2025-11-24 11:17:09 | INFO | main | Сохранён номер авто: BVC123
+2025-11-24 11:17:09 | INFO | main | Номер BVC123 не зарегистрирован в HISTORY
+2025-11-24 11:19:59 | INFO | main | Сохранён номер авто: VBC123
+2025-11-24 11:19:59 | INFO | main | Номер VBC123 не зарегистрирован в HISTORY
+2025-11-24 11:21:27 | INFO | main | Сохранён номер авто: AFV456
+2025-11-24 11:21:27 | INFO | main | Номер AFV456 не зарегистрирован в HISTORY
+2025-11-24 11:27:22 | ERROR | main | Не удалось инициализировать STT-модуль: 'VoiceOrchestrator' object has no attribute 'set_stt_service'
+2025-11-24 11:28:24 | ERROR | main | Не удалось инициализировать STT-модуль: 'VoiceOrchestrator' object has no attribute 'set_stt_service'
+2025-11-24 11:28:38 | ERROR | main | Не удалось инициализировать STT-модуль: 'VoiceOrchestrator' object has no attribute 'set_stt_service'
+2025-11-24 11:31:31 | ERROR | main | Не удалось инициализировать STT-модуль: 'VoiceOrchestrator' object has no attribute 'set_stt_service'
+2025-11-24 11:32:29 | ERROR | main | Не удалось инициализировать STT-модуль: 'VoiceOrchestrator' object has no attribute 'set_stt_service'
+2025-11-24 11:33:39 | ERROR | main | Не удалось инициализировать STT-модуль: 'VoiceOrchestrator' object has no attribute 'set_stt_service'
+2025-11-24 14:45:39 | ERROR | app.services.tts_service | TTS subprocess failed (code=1). stderr=Traceback (most recent call last):
+  File "/Users/rima/dev/orbility/OrbilityParking/tts_module/runner.py", line 10, in <module>
+    from tts_module.tts import PiperTTS
+ModuleNotFoundError: No module named 'tts_module' stdout=
+2025-11-24 14:45:47 | ERROR | app.services.tts_service | TTS subprocess failed (code=1). stderr=Traceback (most recent call last):
+  File "/Users/rima/dev/orbility/OrbilityParking/tts_module/runner.py", line 10, in <module>
+    from tts_module.tts import PiperTTS
+ModuleNotFoundError: No module named 'tts_module' stdout=
+2025-11-24 14:46:29 | ERROR | app.services.tts_service | TTS subprocess failed (code=-11). stderr= stdout=
+2025-11-24 14:46:50 | ERROR | app.services.tts_service | TTS subprocess failed (code=-11). stderr= stdout=
+2025-11-24 18:44:03 | ERROR | app.services.tts_service | TTS subprocess failed (code=2). stderr=ERROR:root:TTS runner failed
+Traceback (most recent call last):
+  File "D:\Projects\OrbilityParking\tts_module\runner.py", line 32, in main
+    tts.synthesize_to_file(args.text, tmp, voice=args.voice)
+  File "D:\Projects\OrbilityParking\tts_module\tts.py", line 52, in synthesize_to_file
+    voice_obj = PiperVoice.load(model_path)
+NameError: name 'PiperVoice' is not defined stdout=
+2025-11-24 18:44:18 | ERROR | app.services.tts_service | TTS subprocess failed (code=2). stderr=ERROR:root:TTS runner failed
+Traceback (most recent call last):
+  File "D:\Projects\OrbilityParking\tts_module\runner.py", line 32, in main
+    tts.synthesize_to_file(args.text, tmp, voice=args.voice)
+  File "D:\Projects\OrbilityParking\tts_module\tts.py", line 52, in synthesize_to_file
+    voice_obj = PiperVoice.load(model_path)
+NameError: name 'PiperVoice' is not defined stdout=
