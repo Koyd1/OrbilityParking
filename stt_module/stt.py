@@ -6,6 +6,7 @@ import queue
 import pyaudio
 import psutil
 import os
+import re
 
 
 class WhisperSTT:
@@ -73,7 +74,7 @@ class WhisperSTT:
                 accumulated_audio = np.concatenate([accumulated_audio, chunk])
 
                 # Если накоплено >= 4 секунд — транскрибировать
-                if len(accumulated_audio) >= self.sample_rate * 4:
+                if len(accumulated_audio) >= self.sample_rate * 7:
                     text, lang = self.transcribe_buffer(accumulated_audio)
                     if text.strip():
                         if self.transcript_callback:
@@ -133,6 +134,13 @@ class WhisperSTT:
                 stop_event.set()
                 if resource_thread:
                     resource_thread.join()
+    
+    def extract_plate_num(self, text: str) -> str:
+        # Оставляем только буквы и цифры
+        cleaned = re.sub(r"[^A-Za-z0-9]", "", text)
+
+        # Переводим в верхний регистр
+        return cleaned.upper()
 
 
 def print_resources():
@@ -154,6 +162,7 @@ def main():
 
     print("\nЗапуск транскрибации с микрофона...")
     stt.transcribe_microphone(duration=20, show_resources=True)
+
 
 
 if __name__ == "__main__":

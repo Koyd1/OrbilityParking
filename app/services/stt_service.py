@@ -24,4 +24,6 @@ class STTService:
 
     def feed_audio(self, chunk) -> None:
         self.engine.add_audio_chunk(chunk)
-
+        
+    def extract_plate_num(self, text: str) -> str:
+        return self.engine.extract_plate_num(text)
