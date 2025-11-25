@@ -1,0 +1,37 @@
+# Полная автоматизация для Windows без установленного Python.
+# Скачивает и ставит Python 3.10 (per-user), затем вызывает setup_windows.ps1.
+
+$ErrorActionPreference = "Stop"
+
+$pythonCmd = Get-Command "python" -ErrorAction SilentlyContinue
+
+if (-not $pythonCmd) {
+    Write-Host "Python не найден. Скачиваю установщик 3.10 x64..."
+    $pythonUrl = "https://www.python.org/ftp/python/3.10.14/python-3.10.14-amd64.exe"
+    $installer = Join-Path $env:TEMP "python-3.10.14-amd64.exe"
+    Invoke-WebRequest -Uri $pythonUrl -OutFile $installer
+
+    Write-Host "Устанавливаю Python только для текущего пользователя..."
+    $installDir = Join-Path $env:LocalAppData "Programs\Python\Python310"
+    $args = @(
+        "/quiet",
+        "InstallAllUsers=0",
+        "TargetDir=$installDir",
+        "Include_pip=1",
+        "PrependPath=0",
+        "Shortcuts=0"
+    )
+    Start-Process -FilePath $installer -ArgumentList $args -Wait -NoNewWindow
+
+    # Обновляем путь к только что установленному интерпретатору
+    $pythonExe = Join-Path $installDir "python.exe"
+    if (-not (Test-Path $pythonExe)) {
+        Write-Error "Python после установки не найден в $pythonExe"
+    }
+    $env:PATH = "$installDir;$installDir\Scripts;$env:PATH"
+} else {
+    Write-Host "Найден Python: $($pythonCmd.Source)"
+}
+
+Write-Host "Запускаю scripts\setup_project_for_windows.ps1..."
+& "$PSScriptRoot\setup_project_for_windows.ps1" @args
