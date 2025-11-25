@@ -86,3 +86,8 @@ sqlite3 data/app.sqlite3
   );
   SQL
   ```
+
+## Запуск программы 
+  1. Открыть Windows Powershell 
+  2. cd D:\Projects\OrbilityParking #Your path 
+  3. Запустить ./run.bat
