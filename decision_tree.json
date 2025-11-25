@@ -12,7 +12,21 @@
   "ask_spell_plate": {
     "action": "say: Spell the license plate, please",
     "listen": true,
-    "next": "verify_plate_match"
+    "listen_for": "plate",
+    "next": "ask_if_spell_plate_correct"
+  },
+  "ask_if_spell_plate_correct": {
+    "action": "say: Is your license plate: {PLATE} correct? Please answer yes or no.",
+    "listen": true,
+    "listen_for": "confirmation",
+    "condition": "plate_confirmed()",
+    "yes": "verify_plate_match",
+    "no": {
+      "counter": "increment_failures",
+      "condition": "failures >= 2",
+      "yes": "say_call_operator",
+      "no": "ask_spell_plate"
+    }
   },
   "verify_plate_match": {
     "condition": "check_plate_recognized()",
