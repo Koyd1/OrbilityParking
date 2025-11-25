@@ -6,9 +6,9 @@ $ErrorActionPreference = "Stop"
 $pythonCmd = Get-Command "python" -ErrorAction SilentlyContinue
 
 if (-not $pythonCmd) {
-    Write-Host "Python not found. Downloading the 3.10 x64 installer..."
+    Write-Host "Python not found. Downloading the 3.10.11 x64 installer..."
     $pythonUrl = "https://www.python.org/ftp/python/3.10.11/python-3.10.11-amd64.exe"
-    $installer = Join-Path $env:TEMP "python-3.10.14-amd64.exe"
+    $installer = Join-Path $env:TEMP "python-3.10.11-amd64.exe"
     Invoke-WebRequest -Uri $pythonUrl -OutFile $installer
 
     Write-Host "Installing Python for the current user only..."
@@ -29,9 +29,10 @@ if (-not $pythonCmd) {
         Write-Error "Python not found after install in: $pythonExe"
     }
     $env:PATH = "$installDir;$installDir\Scripts;$env:PATH"
-} else {
+} 
+else {
     Write-Host "Found Python: $($pythonCmd.Source)"
 }
 
-Write-Host "Running scripts\setup_project_for_windows.ps1..."
+Write-Host "Running ./setup_project_for_windows.ps1..."
 & "$PSScriptRoot\setup_project_for_windows.ps1" @args
