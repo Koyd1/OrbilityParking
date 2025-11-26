@@ -7,7 +7,7 @@ $pythonCmd = Get-Command "python" -ErrorAction SilentlyContinue
 
 if (-not $pythonCmd) {
     $pythonCmd = Get-Command "py" -ErrorAction SilentlyContinue
-    if ($pythonCmd) {
+    if (-not $pythonCmd) {
         Write-Host "Python not found. Downloading the 3.10.11 x64 installer..."
         $pythonUrl = "https://www.python.org/ftp/python/3.10.11/python-3.10.11-amd64.exe"
         $installer = Join-Path $env:TEMP "python-3.10.11-amd64.exe"
