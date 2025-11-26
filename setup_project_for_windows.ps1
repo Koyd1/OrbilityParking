@@ -10,7 +10,7 @@ function Assert-Command($name) {
     }
 }
 
-Assert-Command "python"
+Assert-Command "py"
 
 # ------------------------------
 # Проверка версии Python
