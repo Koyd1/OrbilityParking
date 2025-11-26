@@ -15,7 +15,7 @@ Assert-Command "py"
 # ------------------------------
 # Проверка версии Python
 # ------------------------------
-python -c "
+py -c "
 import sys
 major, minor = sys.version_info[:2]
 if (major, minor) < (3, 10):
@@ -34,7 +34,7 @@ $pip = Join-Path $venvPath "Scripts\pip.exe"
 # ------------------------------
 if (-not (Test-Path $venvPath)) {
     Write-Host "Creating venv in: $venvPath"
-    python -m venv $venvPath
+    py -m venv $venvPath
 }
 
 # ------------------------------
